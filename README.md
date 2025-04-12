@@ -1,4 +1,4 @@
-# Next AI Doll
+# AI Doll
 
 An open source AI companion application built with Next.js. This project creates a modern, responsive AI chat interface with multilingual support.
 
@@ -75,17 +75,6 @@ An open source AI companion application built with Next.js. This project creates
    ```
 
 The application will be available at https://127.0.0.1:3000
-
-## 🧩 Project Structure
-
-- `/app` - Next.js application pages and routes
-- `/components` - Reusable UI components
-- `/context` - React context providers
-- `/hooks` - Custom React hooks
-- `/lib` - Shared utilities and helpers
-- `/locales` - Internationalization resources
-- `/public` - Static assets and SSL certificates
-- `/styles` - Global CSS and styling
 
 ## 🤝 Contributing
 

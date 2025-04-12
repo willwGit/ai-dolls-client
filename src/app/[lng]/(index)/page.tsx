@@ -1,156 +1,84 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
-import { Empty, ExploresList } from "@/components/ExploresList";
-import { Slogans } from "@/components/Slogans";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useUserStore } from "@/hooks/use-user";
-import { AppConfigEnv, cn } from "@/lib/utils";
-import { useTranslation } from "@/locales/client";
-import emitter from "@/utils/bus";
-import { filterImage, filterPopularity } from "@/utils/business";
-import { debounce } from "@/utils/debounce-throttle";
+
+import { FC, useState, useEffect, useCallback } from "react";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import { fetchRequest } from "@/utils/request";
-import { copyText } from "@/utils/string-transform";
+import { useTranslation } from "@/locales/client";
+import { useParams } from "next/navigation";
+import "yet-another-react-lightbox/styles.css";
+import Lightbox from "yet-another-react-lightbox";
 import Cookies from "js-cookie";
+import emitter from "@/utils/bus";
+import { filterImage } from "@/utils/business";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
-const popularOrder = "sort is null, coalesce(sort, -popularity)";
-const recentOrder = "id";
-const query = {
-  pageSize: 10,
-  pageNo: 0,
-  orderBy: popularOrder,
-  sort: "",
-};
+interface Post {
+  id: string;
+  content: string;
+  imageUrls: string[];
+  customProfileUrl: string;
+  customProfileName: string;
+  isPremium: boolean;
+  createTime: string;
+  friendStyle: {
+    id: string;
+    name: string;
+    head: string;
+    cover: string;
+    description: string;
+    character: string;
+    greeting: string;
+    hide: number;
+    label: string;
+    sn: string;
+    type: string;
+    validated: number;
+    version: number;
+    visibility: string;
+  };
+}
 
-export default function AccordionDemo() {
+interface ApiResponse {
+  code: number;
+  message: string;
+  result: {
+    userInfo: {
+      premium: {
+        hasPremium: boolean;
+        startTime: string;
+        endTime: string;
+        status: string;
+      };
+      profilePic: string;
+      name: string;
+      id: string;
+    };
+    current: string;
+    total: string;
+    pages: string;
+    records: Post[];
+  };
+}
+
+const Page: FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const params = useParams();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [pageNo, setPageNo] = useState(1);
   const [total, setTotal] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [list, setList] = useState([]);
-  const [catchErr, setCatchErr] = useState(false);
-  const [filterType, setFilterType] = useState("popular");
-  const [popupVisible, setPopupVisible] = useState(false);
-  const [styleDetail, setStyleDetail] = useState<Indexes>({});
-
-  const searchParams = useSearchParams();
-
-  const checkClipboardData = () => {
-    navigator.clipboard
-      ?.readText?.()
-      .then((data) => {
-        if (data) {
-          const snRegex = /(sexy\d{5,})$/;
-          const uidRegex = /uid=(\d+)&/;
-          const snMatch = data.match(snRegex);
-          const uidMatch = data.match(uidRegex);
-          const sn = snMatch ? snMatch[1] : null;
-          const uid = uidMatch ? uidMatch[1] : null;
-          if (sn) {
-            const localSn = localStorage.getItem("shareSn");
-            if (localSn === sn) return;
-            getDetailBySn(sn, uid);
-          }
-        }
-      })
-      .catch(() => {
-        // if (!tryCheckClipboardData) this.checkClipboardData()
-        // this.tryCheckClipboardData = true
-      });
-  };
-
-  const getDetailBySn = (sn: string, uid: string | null) => {
-    fetchRequest(`/restApi/friendStyle/detailBySn/${sn}`).then(({ result }) => {
-      copyText("", () => {}, false);
-      const { hide } = result;
-      if (hide) {
-        const styleDetail = result || {};
-        if (uid) {
-          fetchRequest(`/restApi/member/info/${uid}`)
-            .then(({ result }) => {
-              const { nickName, head, id } = result;
-              styleDetail.userAvater = head;
-              styleDetail.userName = nickName;
-              styleDetail.uid = id;
-              setStyleDetail(styleDetail);
-              openPopup();
-            })
-            .catch(() => {
-              setStyleDetail(styleDetail);
-              openPopup();
-            });
-        } else {
-          setStyleDetail(styleDetail);
-          openPopup();
-        }
-      } else {
-        toast(t("homePage.delete"));
-      }
-    });
-  };
-
-  const openPopup = () => {
-    setPopupVisible(true);
-  };
-
-  const closePopup = () => {
-    setPopupVisible(false);
-  };
-
-  const createFriendBystyle = () => {
-    closePopup();
-    const type = "H5";
-    fetchRequest(
-      `/restApi/friendStyle/random?reviewVersion=${AppConfigEnv.APPVERSIONCODE}&type=${AppConfigEnv.APPTYPE}`,
-      {
-        styleId: styleDetail.id,
-      }
-    ).then((res) => {
-      if (res.code === 1001) {
-        router.push("/create-result?source=unlock_girl");
-        return;
-      }
-      router.push(`/chat?friendId=${res.result.id}`);
-    });
-  };
-
-  const goToSearch = () => {
-    router.push("/search");
-  };
-
-  const onTabItem = (item: any) => {
-    debounce(() => {
-      // item.isClicked = true;
-      // if (item.cover2) item.currentCover = item.cover2;
-      // setTimeout(() => {
-      // item.isClicked = false;
-      const { id, name } = item;
-      // if (item.type === 'PROFESSIONALLY') {
-      //   router.push(`/create-options?styleId=${id}&styleByName=${name}`);
-      // } else {
-      if (
-        Cookies.get("token") ||
-        (typeof window != "undefined" &&
-          origin !== "https://www.telegramloveai.com")
-      ) {
-        emitter.emit("setGlobalLoading", true);
-        createFriend(id, name);
-      } else {
-        router.push(`/chat?styleId=${id}`);
-      }
-      // }
-
-      //   setTimeout(() => {
-      //     item.currentCover = item.cover;
-      //   }, 2000);
-      // }, 500);
-    }, 2000);
-  };
+  const [userInfo, setUserInfo] = useState<
+    ApiResponse["result"]["userInfo"] | null
+  >(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentPost, setCurrentPost] = useState<Post | null>(null);
+  const [currentImageUrls, setCurrentImageUrls] = useState<string[]>([]);
+  const [authError, setAuthError] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
 
   const createFriend = (id: string, name: string) => {
     fetchRequest("/restApi/friend/generate", {
@@ -190,261 +118,327 @@ export default function AccordionDemo() {
       });
   };
 
-  const switchFilter = (key: string) => {
-    if (key === filterType) return;
+  const getPosts = useCallback(
+    (reset = false) => {
+      if (loading || loaded) return;
 
-    setFilterType(key === "popular" ? "popular" : "recent");
-    if (key === "popular") {
-      query.orderBy = popularOrder;
-      query.sort = "";
-    } else {
-      query.orderBy = recentOrder;
-      query.sort = "desc";
-    }
-    resetList();
-  };
+      setLoading(true);
+      const currentPage = reset ? 1 : pageNo + 1;
 
-  const resetList = () => {
-    if (loading) return;
-    setLoaded(false);
-    query.pageNo = 0;
-    getList();
-  };
-
-  const getList = () => {
-    if (loading) return;
-
-    // const { appVersionCode } = this.$store.state.system
-    // if (!appVersionCode) {
-    //   setTimeout(() => {
-    //     this.resetList()
-    //   }, 50)
-    //   return
-    // }
-
-    const type = "H5";
-    setLoading(true);
-
-    query.pageNo += 1;
-
-    fetchRequest(
-      `/restApi/friendStyle/auth/explores?reviewVersion=${AppConfigEnv.APPVERSIONCODE}&type=${type}`,
-      query
-    )
-      .then(({ result }) => {
-        setCatchErr(false);
-        const { rows, total: _total } = result;
-        rows.forEach((item: any) => {
-          // if (item.cover2) {
-          //   const img = new Image({})
-          //   img.src = filterImage(item.cover2)
-          // }
-          item.isClicked = false;
-          item.currentCover = item.cover;
-          item.processedPopularity = filterPopularity(item.popularity);
-        });
-        let copyList = list;
-        if (query.pageNo === 1) {
-          copyList = rows;
-        } else {
-          copyList = list.concat(rows);
-        }
-        setList(copyList);
-        setTotal(_total);
-        setLoaded(copyList.length >= _total);
-
-        setTimeout(() => {
-          setLoading(false);
-        }, 100);
+      fetchRequest(`/restApi/posts/list/${currentPage}/50`, undefined, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
-      .catch(() => {
-        setLoading(false);
-        setCatchErr(true);
-        setTotal(0);
-      });
-  };
+        .then((response: ApiResponse) => {
+          // Handle authentication errors
+          if (response.code === 401) {
+            setAuthError(true);
+            setPosts([]);
+            return;
+          }
+
+          // Handle other error codes
+          if (response.code !== 200) {
+            console.error("Error fetching posts:", response.message);
+            // Clear posts if it's a fresh load
+            if (reset) setPosts([]);
+            return;
+          }
+
+          // Ensure result exists before processing
+          if (!response.result) {
+            console.error("Invalid response structure");
+            if (reset) setPosts([]);
+            return;
+          }
+
+          const { records, total, userInfo } = response.result;
+
+          setUserInfo(userInfo);
+
+          // Only update posts if we have valid records
+          if (reset) {
+            setPosts(records);
+          } else {
+            setPosts((prev) => [...prev, ...records]);
+          }
+
+          setTotal(parseInt(total));
+          setLoaded(currentPage * 50 >= parseInt(total));
+          if (currentPage * 50 >= parseInt(total)) {
+            setLoading(false);
+          }
+          setPageNo(currentPage);
+          setHasFetched(true);
+        })
+        .catch((error) => {
+          if (error.response?.status === 401) {
+            setAuthError(true);
+            setPosts([]);
+          } else if (currentPage === 1) {
+            setPosts([]);
+            setLoaded(true);
+          }
+        })
+        .finally(() => {
+          setTimeout(() => setLoading(false), 100);
+          setHasFetched(true);
+        });
+    },
+    [loading, pageNo, loaded]
+  );
 
   useEffect(() => {
-    resetList();
-    checkClipboardData();
-    emitter.emit("initSlogans");
-
-    let time: NodeJS.Timeout;
-    const { t, m, payType } = {
-      t: searchParams.get("t"),
-      m: searchParams.get("m"),
-      payType: searchParams.get("payType"),
-    };
-    if (t && localStorage.getItem("order") !== t) {
-      localStorage.setItem("order", t);
-      time = setTimeout(() => {
-        fbq("track", "Purchase", {
-          value: +m!,
-          currency: "USD",
-          payType: payType === "1" ? "stripe" : "vpay6",
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (time) clearTimeout(time);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    getPosts(true);
+  }, [getPosts]);
 
   useEffect(() => {
     const handleScroll = () => {
       const isBottom =
-        window.innerHeight + document.documentElement.scrollTop ===
-        document.documentElement.scrollHeight;
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.scrollHeight - 100;
 
-      if (isBottom) {
-        if (!list.length || loaded || loading) return;
-        getList();
+      if (isBottom && !loaded && !loading && posts.length > 0) {
+        getPosts();
       }
     };
 
-    // 添加滚动监听
-    window.addEventListener("scroll", handleScroll);
+    if (!loaded) {
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [posts, loaded, loading, getPosts]);
 
-    // 组件卸载时移除监听
-    return () => window.removeEventListener("scroll", handleScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [list, loaded, loading]); // 空依赖数组确保事件监听只被添加和移除一次
+  const handleUnlock = (post: Post) => {
+    if (userInfo?.premium?.hasPremium) {
+      alert("You already have access to this premium content!");
+    } else {
+      router.push(`/${params.lng}/create-result?source=unlock_post`);
+    }
+  };
+
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+
+    if (hours < 1) return "Just now";
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours / 24)}d ago`;
+  };
+
+  const handleImageClick = (post: Post, index: number) => {
+    if (post.isPremium && !userInfo?.premium?.hasPremium) {
+      handleUnlock(post);
+      return;
+    }
+    const validImageUrls = post.imageUrls
+      .filter((url) => url.trim() !== "")
+      .map((url) => filterImage(url));
+    setCurrentImageUrls(validImageUrls);
+    setCurrentPost(post);
+    setCurrentImageIndex(index);
+    setIsOpen(true);
+  };
+
+  const handleProfileClick = (post: Post) => {
+    if (
+      Cookies.get("token") ||
+      (typeof window != "undefined" &&
+        origin !== "https://www.telegramloveai.com")
+    ) {
+      emitter.emit("setGlobalLoading", true);
+      createFriend(post.friendStyle.id, post.friendStyle.name);
+    } else {
+      router.push(`/chat?styleId=${post.friendStyle.id}`);
+    }
+  };
 
   return (
-    <div className="full-page tab-page pt-0">
-      <div className="fixed z-50 flex justify-between bg-[#181425] items-center top-0 left-0 w-full py-3 px-5">
-        <div className="text-2xl font-bold text-white">{t("index.title")}</div>
-        <div className="flex items-center">
-          <Image
-            onClick={goToSearch}
-            width={20}
-            height={20}
-            className="mx-3"
-            src="/icons/search.png"
-            alt=""
-          />
-          <div className="p-[2px] bg-white bg-opacity-10 flex items-center rounded-lg">
-            <div
-              className={cn(
-                "text-opacity-60 p-[6px] text-xs text-white rounded-lg",
-                filterType === "popular"
-                  ? "bg-white bg-opacity-30 text-opacity-100"
-                  : ""
-              )}
-              onClick={() => switchFilter("popular")}
+    <div className="space-y-6 max-w-2xl mx-auto pb-20 mt-0">
+      {authError && (
+        <div className="text-center py-12">
+          <div className="bg-white/5 rounded-xl p-8">
+            <h2 className="text-xl text-white mb-4">
+              {t("Login to View Posts")}
+            </h2>
+            <button
+              onClick={() => router.push(`/${params.lng}/login`)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full transition-colors"
             >
-              {t("index.popular")}
-            </div>
-            <div
-              className={cn(
-                "text-opacity-60 p-[6px] text-xs text-white rounded-lg",
-                filterType === "recent"
-                  ? "bg-white bg-opacity-30 text-opacity-100"
-                  : ""
-              )}
-              onClick={() => switchFilter("recent")}
-            >
-              {t("index.recent")}
-            </div>
+              {t("Login / Sign Up")}
+            </button>
           </div>
         </div>
-      </div>
-      <div className="pt-[72px]">
-        <Slogans />
+      )}
 
-        {(!total && loaded) || catchErr ? (
-          <Empty
-            needReload={catchErr}
-            text={t("index.noMore")}
-            subtext={t("index.youCanCreate")}
-            emptyImageKey="index"
-            reload={resetList}
-          />
-        ) : (
-          <ExploresList
-            list={list}
-            loaded={loaded}
-            total={total}
-            isLoading={loading}
-            getListEmit={getList}
-            tabItemEmit={onTabItem}
-          />
-        )}
-      </div>
+      {!authError && posts.length === 0 && hasFetched && (
+        <div className="text-center text-white/60 py-12">
+          {t("No posts available")}
+        </div>
+      )}
 
-      <Dialog open={popupVisible} onOpenChange={setPopupVisible}>
-        <DialogContent>
-          <div className="w-[90vw] p-5 box-border rounded-lg bg-[#e1e1fd]">
-            {Boolean(styleDetail.uid) && (
-              <div className="slot__header flex-container mb-3">
-                {styleDetail.userAvater ? (
-                  <Image
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                    src={filterImage(styleDetail.userAvater)}
-                    alt=""
-                  />
-                ) : (
-                  <Image
-                    width={32}
-                    height={32}
-                    className="rounded-full mb-1"
-                    src="/images/default-head.png"
-                    alt=""
-                  />
-                )}
-
-                <div className="text-[#625e6f]">
-                  <div className="text-sm font-bold line-clamp-1">
-                    {styleDetail.userName}
-                  </div>
-                  <div className="mt-[1px] text-xs">{t("index.shared")}</div>
-                </div>
-              </div>
-            )}
-
-            <img
-              className="mb-4 rounded-xl w-full h-80 object-top"
-              src={filterImage(styleDetail.head)}
-              alt=""
+      {posts.map((post) => (
+        <article
+          key={post.id}
+          className="bg-white/5 rounded-xl overflow-hidden"
+        >
+          <div
+            className="p-4 flex items-center space-x-3 cursor-pointer"
+            onClick={() =>
+              router.push(`/${params.lng}/profile/${post.friendStyle.sn}`)
+            }
+          >
+            <Image
+              src={filterImage(post.customProfileUrl)}
+              alt={post.customProfileName}
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-full object-cover"
             />
-            <div className="slot__bottom">
-              <div className="mb-2 flex items-center">
-                <div className="max-w-52 font-bold text-3xl text-[#181425] line-clamp-1 mr-2">
-                  {styleDetail.name}
-                </div>
-                <div className="flex justify-center items-center mx2 py-[1px] px-2 rounded-3xl bg-[#c2c2e0] text-sm text-[#625e6f]">
-                  {styleDetail.sn}
-                </div>
-              </div>
-              <div className="text-base line-clamp-2 text-[#625e6f]">
-                {styleDetail.description}
-              </div>
-              <div
-                className="flex justify-center items-center mt-6 mx-auto w-32 h-12 rounded-full text-lg font-bold text-white"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(to right, #736bff 0%, #e254ee 100%)",
-                }}
-                onClick={createFriendBystyle}
-              >
-                {t("index.chat")}
-              </div>
+            <div className="flex-1">
+              <h3 className="text-white font-medium">
+                {post.customProfileName}
+              </h3>
+              <p className="text-white/60 text-sm">
+                {formatTimestamp(post.createTime)}
+              </p>
             </div>
+            {post.isPremium && (
+              <button
+                onClick={() => handleUnlock(post)}
+                className={cn(
+                  "px-4 py-1.5 text-white text-sm rounded-full flex items-center gap-2 transition-colors",
+                  userInfo?.premium?.hasPremium
+                    ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                    : "bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                )}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d={
+                      userInfo?.premium?.hasPremium
+                        ? "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        : "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    }
+                  />
+                </svg>
+                {userInfo?.premium?.hasPremium ? "Premium" : "Unlock"}
+              </button>
+            )}
           </div>
-          {/* <DialogHeader>
-      <DialogTitle>Are you absolutely sure?</DialogTitle>
-      <DialogDescription>
-        This action cannot be undone. This will permanently delete your account
-        and remove your data from our servers.
-      </DialogDescription>
-    </DialogHeader> */}
-        </DialogContent>
-      </Dialog>
-      {/* <FloatingBall></FloatingBall> */}
+
+          <p className="px-4 text-white/90 mb-8 text-lg">{post.content}</p>
+
+          {(() => {
+            const validImageUrls = post.imageUrls.filter(
+              (url) => url.trim() !== ""
+            );
+            if (validImageUrls.length === 0) return null;
+            return (
+              <div className="relative mt-4 px-4 pb-4">
+                <div
+                  className={cn("grid gap-3", {
+                    "grid-cols-1": validImageUrls.length === 1,
+                    "grid-cols-2": validImageUrls.length === 2,
+                    "grid-cols-3": validImageUrls.length >= 3,
+                  })}
+                >
+                  {validImageUrls.map((image, idx) => (
+                    <div
+                      key={idx}
+                      className={cn("relative group cursor-pointer", {
+                        "aspect-video": validImageUrls.length === 1,
+                        "aspect-square": validImageUrls.length > 1,
+                        "col-span-3": validImageUrls.length === 1,
+                        "col-span-1": validImageUrls.length > 1,
+                      })}
+                      onClick={() => handleImageClick(post, idx)}
+                    >
+                      <Image
+                        src={filterImage(image)}
+                        alt=""
+                        width={300}
+                        height={300}
+                        className={cn(
+                          "w-full h-full object-cover",
+                          validImageUrls.length === 1
+                            ? "rounded-lg"
+                            : "rounded-md",
+                          post.isPremium &&
+                            !userInfo?.premium?.hasPremium &&
+                            "blur-[5px] brightness-75"
+                        )}
+                      />
+                      {post.isPremium && !userInfo?.premium?.hasPremium && (
+                        <div
+                          className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                          onClick={() => handleUnlock(post)}
+                        >
+                          <div className="bg-black/30 p-3 rounded-xl flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className={cn(
+                                "text-white",
+                                validImageUrls.length === 1
+                                  ? "h-12 w-12"
+                                  : "h-8 w-8"
+                              )}
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+        </article>
+      ))}
+
+      {loading && (
+        <div className="text-center text-white/60 py-4">Loading...</div>
+      )}
+
+      {currentPost && (
+        <Lightbox
+          open={isOpen}
+          close={() => setIsOpen(false)}
+          index={currentImageIndex}
+          slides={currentImageUrls.map((url) => ({ src: url }))}
+          carousel={{
+            finite: true,
+            preload: 1,
+          }}
+          animation={{ fade: 300 }}
+          controller={{ closeOnBackdropClick: true }}
+        />
+      )}
     </div>
   );
-}
+};
+
+export default Page;

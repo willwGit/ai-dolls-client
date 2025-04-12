@@ -198,7 +198,7 @@ export default function ProfilePage() {
               <h1 className="text-2xl font-bold text-[#181425]">
                 {profile.name}
               </h1>
-              <p className="text-[#625e6f]">@{profile.sn}</p>
+              {/* <p className="text-[#625e6f]">@{profile.sn}</p> */}
             </div>
           </div>
 
@@ -250,9 +250,9 @@ export default function ProfilePage() {
                 <span>{t("Loading...")}</span>
               </div>
             ) : existingChat ? (
-              t("Open Sexy Chat")
+              t("Open Chat")
             ) : (
-              t("Start Sexy Chat")
+              t("Start Chat")
             )}
           </button>
         </div>

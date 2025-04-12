@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { TFunction } from 'i18next';
-import Image from 'next/image';
-import { FC, SyntheticEvent, useContext } from 'react';
-import { ChatContext } from './Client';
-import { useRouter } from 'next/navigation';
-import { debounce } from '@/utils/debounce-throttle';
-import { filterImage, logout } from '@/utils/business';
-import emitter from '@/utils/bus';
-import { toast } from 'sonner';
-import Cookies from 'js-cookie';
+import { cn } from "@/lib/utils";
+import { TFunction } from "i18next";
+import Image from "next/image";
+import { FC, SyntheticEvent, useContext } from "react";
+import { ChatContext } from "./Client";
+import { useRouter } from "next/navigation";
+import { debounce } from "@/utils/debounce-throttle";
+import { filterImage, logout } from "@/utils/business";
+import emitter from "@/utils/bus";
+import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 type Record<T = any> = FC<
   {
@@ -20,7 +20,7 @@ type Record<T = any> = FC<
 
 const ClassName = {
   text__inner:
-    'text__inner px-3 py-2 max-w-72 min-w-14 min-h-9 rounded-2xl bg-[#e9e9eb] break-words whitespace-pre-wrap',
+    "text__inner px-3 py-2 max-w-72 min-w-14 min-h-9 rounded-2xl bg-[#e9e9eb] break-words whitespace-pre-wrap",
 };
 
 // 时间, 通知
@@ -28,8 +28,8 @@ export const SystemRecord: Record = ({ item }) => {
   return (
     <div
       className={cn(
-        'item--info text-sm text-[#ebebf5] text-center mb-3 whitespace-pre-wrap',
-        !!item.scene && item.type !== 'TIMESTAMP' ? 'scene' : ''
+        "item--info text-sm text-[#ebebf5] text-center mb-3 whitespace-pre-wrap",
+        !!item.scene && item.type !== "TIMESTAMP" ? "scene" : ""
       )}
     >
       {item.message}
@@ -45,7 +45,7 @@ type TextRecord = {
   }>;
   TextNoPremium: FC<{
     item: any;
-    t: TFunction<'translation', undefined>;
+    t: TFunction<"translation", undefined>;
     onUnlock: (val: string) => void;
   }>;
 };
@@ -57,16 +57,16 @@ export const TextRecord: TextRecord = {
     return (
       <div
         className={cn(
-          'text__inner group-[.self]:bg-[#3f3b52] group-[.self]:text-white',
+          "text__inner group-[.self]:bg-[#3f3b52] group-[.self]:text-white",
           ClassName.text__inner,
-          item.type === 'HOT_DATE' ? 'hot-date text-white' : '',
-          item.type === 'ROLE_PLAY' ? 'role-play text-white' : ''
+          item.type === "HOT_DATE" ? "hot-date text-white" : "",
+          item.type === "ROLE_PLAY" ? "role-play text-white" : ""
         )}
         style={{
           backgroundImage: (
             {
-              HOT_DATE: 'linear-gradient(to right, #ff8f4f 0%, #ec52d4 100%)',
-              ROLE_PLAY: 'linear-gradient(to right, #ff8f4f 0%, #ec52d4 100%)',
+              HOT_DATE: "linear-gradient(to right, #ff8f4f 0%, #ec52d4 100%)",
+              ROLE_PLAY: "linear-gradient(to right, #ff8f4f 0%, #ec52d4 100%)",
             } as Indexes
           )[item.type],
         }}
@@ -84,14 +84,14 @@ export const TextRecord: TextRecord = {
         <div
           className={cn(
             ClassName.text__inner,
-            'text__inner relative max-w-64',
-            item.type === 'HOT_DATE' ? 'hot-date' : '',
-            item.type === 'ROLE_PLAY' ? 'role-play' : ''
+            "text__inner relative max-w-64",
+            item.type === "HOT_DATE" ? "hot-date" : "",
+            item.type === "ROLE_PLAY" ? "role-play" : ""
           )}
           dir={ctx.dir}
           dangerouslySetInnerHTML={{ __html: item.message }}
         />
-        {typeof item.feedback !== 'undefined' && !item.feedback && (
+        {typeof item.feedback !== "undefined" && !item.feedback && (
           <div className="edit-praise flex items-center ml-3">
             <Image
               className="rounded-full flex justify-center items-center w-8 h-8 bg-[#474459]"
@@ -100,7 +100,7 @@ export const TextRecord: TextRecord = {
               src="/icons/praise.png"
               alt="praise"
               onClick={() => {
-                handlePraise(item, 'LIKE');
+                handlePraise(item, "LIKE");
               }}
             />
             <Image
@@ -110,14 +110,14 @@ export const TextRecord: TextRecord = {
               src="/icons/no-praise.png"
               alt="no-praise"
               onClick={() => {
-                handlePraise(item, 'DISLIKE');
+                handlePraise(item, "DISLIKE");
               }}
             />
           </div>
         )}
-        {['LIKE', 'DISLIKE'].includes(item.feedback) && (
+        {["LIKE", "DISLIKE"].includes(item.feedback) && (
           <div className="fixed-btn absolute -right-3 bottom-0 bg-white flex justify-center items-center w-8 h-8 rounded-full">
-            {item.feedback === 'LIKE' && (
+            {item.feedback === "LIKE" && (
               <Image
                 width={28}
                 height={28}
@@ -127,7 +127,7 @@ export const TextRecord: TextRecord = {
                 onClick={() => handlePraise(item, null)}
               />
             )}
-            {item.feedback === 'DISLIKE' && (
+            {item.feedback === "DISLIKE" && (
               <Image
                 width={28}
                 height={28}
@@ -156,8 +156,8 @@ export const TextRecord: TextRecord = {
             e.preventDefault();
             onUnlock(
               item.gptModeration === 1
-                ? 'unlock-private-text'
-                : 'unlock-sensitive-text'
+                ? "unlock-private-text"
+                : "unlock-sensitive-text"
             );
           }}
         >
@@ -168,13 +168,13 @@ export const TextRecord: TextRecord = {
           <div
             className="btn flex items-center ml-3 justify-center w-28 h-10 rounded-full text-lg text-white"
             style={{
-              background: 'linear-gradient(to right, #7e78e4 0%, #9e6ed1 100%)',
+              background: "linear-gradient(to right, #7e78e4 0%, #9e6ed1 100%)",
             }}
             onClick={() => [
               onUnlock(
                 item.gptModeration === 1
-                  ? 'unlock-private-text'
-                  : 'unlock-sensitive-text'
+                  ? "unlock-private-text"
+                  : "unlock-sensitive-text"
               ),
             ]}
           >
@@ -185,7 +185,7 @@ export const TextRecord: TextRecord = {
               height={24}
               src="/icons/love-lock.png"
             />
-            {t('chat.unlock')}
+            {t("chat.unlock")}
           </div>
         </div>
       </div>
@@ -201,12 +201,12 @@ export const AsmrRecord: Record<{
   const router = useRouter();
 
   const goToASMR = () => {
-    toast('coming soon');
+    toast("coming soon");
     return;
     const { asmrUrl, id, message } = item;
     const { premiumStatus } = state.userState!;
-    if (premiumStatus === 'NONE') {
-      onUnlock('unlock_asmr');
+    if (premiumStatus === "NONE") {
+      onUnlock("unlock_asmr");
       return;
     }
     const { animationHead, name, head } = state.detail!;
@@ -232,12 +232,12 @@ export const AsmrRecord: Record<{
     >
       <div
         className={cn(
-          'text__inner asmr flex items-center relative',
+          "text__inner asmr flex items-center relative",
           ClassName.text__inner
         )}
         style={{
           backgroundImage:
-            'linear-gradient(41deg, #8d7adb 0%, #e6a0cc 32%, #6e91ea 71%, #b5e1f8 100%), linear-gradient(53deg, rgba(140, 117, 217, 0.51) 3%, rgba(140, 117, 217, 0) 100%)',
+            "linear-gradient(41deg, #8d7adb 0%, #e6a0cc 32%, #6e91ea 71%, #b5e1f8 100%), linear-gradient(53deg, rgba(140, 117, 217, 0.51) 3%, rgba(140, 117, 217, 0) 100%)",
         }}
       >
         <Image
@@ -268,9 +268,9 @@ export const AudioRecord: Record<{
 }> = ({ item, destroyAudio }) => {
   const ctx = useContext(ChatContext);
   const filterDuration = (num: number) => {
-    if (!num) return '0:00';
+    if (!num) return "0:00";
     const h = parseInt(String(num / 60), 10);
-    const s = `${Math.round(num % 60)}`.padStart(2, '0');
+    const s = `${Math.round(num % 60)}`.padStart(2, "0");
     return `${h}:${s}`;
   };
 
@@ -279,7 +279,7 @@ export const AudioRecord: Record<{
       const { id, playing, voiceUrl } = item;
 
       if (!voiceUrl) {
-        toast('Play failure');
+        toast("Play failure");
         return;
       }
 
@@ -287,7 +287,7 @@ export const AudioRecord: Record<{
         destroyAudio();
         ctx.state!.currentAudioItem = item;
         ctx.setLoading?.(true);
-        emitter.emit('setGlobalLoading', true);
+        emitter.emit("setGlobalLoading", true);
 
         ctx.state!.audioContext!.src = voiceUrl;
         ctx.state!.audioContext!.load();
@@ -298,15 +298,15 @@ export const AudioRecord: Record<{
         //   ctx.state!.audioContext!.playing = false;
         // }, 50);
         ctx.setLoading?.(false);
-        emitter.emit('setGlobalLoading', false);
+        emitter.emit("setGlobalLoading", false);
       } else if (ctx.state?.audioContext?.readyState >= 3) {
         ctx.state?.audioContext?.play();
       } else {
         ctx.state?.audioContext?.addEventListener(
-          'canplay',
+          "canplay",
           () => {
             ctx.setLoading?.(false);
-            emitter.emit('setGlobalLoading', false);
+            emitter.emit("setGlobalLoading", false);
             ctx.state?.audioContext?.play();
           },
           { once: true }
@@ -331,7 +331,7 @@ export const AudioRecord: Record<{
     <div
       className="item__container--voice flex items-center w-[170px] h-14 border border-[#8c8c8c] rounded-2xl"
       style={{
-        background: 'rgba(98, 94, 111, 0.6)',
+        background: "rgba(98, 94, 111, 0.6)",
       }}
       onClick={() => {
         playVoice();
@@ -344,8 +344,8 @@ export const AudioRecord: Record<{
           src="/icons/pause.png"
           alt="pause"
           className={cn(
-            'absolute left-0 top-0',
-            item.playing ? 'z-10 opacity-100' : 'z-0 opacity-0'
+            "absolute left-0 top-0",
+            item.playing ? "z-10 opacity-100" : "z-0 opacity-0"
           )}
         />
         <Image
@@ -354,8 +354,8 @@ export const AudioRecord: Record<{
           src="/icons/play.png"
           alt="play"
           className={cn(
-            'absolute left-0 top-0',
-            !item.playing ? 'z-10 opacity-100' : 'z-0 opacity-0'
+            "absolute left-0 top-0",
+            !item.playing ? "z-10 opacity-100" : "z-0 opacity-0"
           )}
         />
       </div>
@@ -363,14 +363,14 @@ export const AudioRecord: Record<{
         {new Array(9).fill(1).map((each, index) => (
           <div
             className={cn(
-              'progress__line h-4 w-[3px] mr-1 rounded',
-              'first-of-type:h-2 [&:nth-of-type(9)]:h-2 [&:nth-of-type(5)]:h-2 [&:nth-of-type(3)]:h-[26px] [&:nth-of-type(7)]:h-[26px]'
+              "progress__line h-4 w-[3px] mr-1 rounded",
+              "first-of-type:h-2 [&:nth-of-type(9)]:h-2 [&:nth-of-type(5)]:h-2 [&:nth-of-type(3)]:h-[26px] [&:nth-of-type(7)]:h-[26px]"
             )}
             style={{
               background:
                 Number(item.voiveProgress) > index
-                  ? 'linear-gradient(to right, #7e78e4 0%, #9e6ed1 100%)'
-                  : 'white',
+                  ? "linear-gradient(to right, #7e78e4 0%, #9e6ed1 100%)"
+                  : "white",
             }}
             key={index}
           ></div>
@@ -402,14 +402,14 @@ export const ImageVideoRecorder: Record<{
     debounce(
       () => {
         const { premiumStatus } = ctx.userState!;
-        if (item.type === 'VIDEO') {
-          if (!Cookies.get('token')) {
+        if (item.type === "VIDEO") {
+          if (!Cookies.get("token")) {
             logout();
             return;
           }
 
-          if (premiumStatus === 'NONE') {
-            onUnlock('unlock_Video');
+          if (premiumStatus === "NONE") {
+            onUnlock("unlock_Video");
             return;
           }
 
@@ -418,9 +418,9 @@ export const ImageVideoRecorder: Record<{
             poster: item.coverUrl,
           });
           ctx.setVideoVisible?.(true);
-        } else if (key !== 'undress') {
+        } else if (key !== "undress") {
           const needUndress =
-            item.resourceType === 'IMAGE_NORAL' && !item.isUnderwearUnlocked;
+            item.resourceType === "IMAGE_NORAL" && !item.isUnderwearUnlocked;
           if (needUndress) {
             ctx.state!.needUpdateImg = item;
           }
@@ -430,8 +430,8 @@ export const ImageVideoRecorder: Record<{
           if (ctx.detail?.name !== ctx.detail?.friendStyleName)
             query += `&name=${ctx.detail?.name}`;
           router.push(`/photo?${query}`);
-        } else if (premiumStatus === 'NONE') {
-          onUnlock('unlock_Undress_chat');
+        } else if (premiumStatus === "NONE") {
+          onUnlock("unlock_Undress_chat");
         } else {
           ctx.state!.needUpdateImg = item;
           doUndress();
@@ -445,7 +445,7 @@ export const ImageVideoRecorder: Record<{
   return (
     <div className="item__container--video">
       <div className="video-wrapper">
-        {item.type === 'IMG' ? (
+        {item.type === "IMG" ? (
           <Image
             className="cover-img rounded-2xl"
             width={171}
@@ -467,16 +467,16 @@ export const ImageVideoRecorder: Record<{
 
         <div
           className={cn(
-            'mask absolute left-0 top-0 size-full rounded-2xl',
-            ctx.userState?.premiumStatus === 'NONE' && item.type !== 'IMG'
-              ? 'filter backdrop-blur-xl'
-              : ''
+            "mask absolute left-0 top-0 size-full rounded-2xl",
+            ctx.userState?.premiumStatus === "NONE" && item.type !== "IMG"
+              ? "filter backdrop-blur-xl"
+              : ""
           )}
           onClick={() => {
             openCreateVideo();
           }}
         >
-          {item.type !== 'IMG' && item.loaded && (
+          {item.type !== "IMG" && item.loaded && (
             <Image
               className="icon absolute top-2/4 left-16 -translate-y-2/4"
               width={40}
@@ -486,28 +486,28 @@ export const ImageVideoRecorder: Record<{
             ></Image>
           )}
 
-          {(ctx.userState?.premiumStatus === 'NONE' && item.type === 'VIDEO') ||
-          (item.type === 'IMG' &&
-            item.resourceType === 'IMAGE_NORAL' &&
+          {(ctx.userState?.premiumStatus === "NONE" && item.type === "VIDEO") ||
+          (item.type === "IMG" &&
+            item.resourceType === "IMAGE_NORAL" &&
             !item.isUnderwearUnlocked &&
             ctx.system?.isFull) ? (
             <div
               className={`fixed-right hidden absolute top-2/4 right-0 translate-x-full -translate-y-2/4 items-center ${
-                (ctx.userState?.premiumStatus === 'NONE' &&
-                  item.type === 'VIDEO') ||
-                (item.type === 'IMG' &&
-                  item.resourceType === 'IMAGE_NORAL' &&
+                (ctx.userState?.premiumStatus === "NONE" &&
+                  item.type === "VIDEO") ||
+                (item.type === "IMG" &&
+                  item.resourceType === "IMAGE_NORAL" &&
                   !item.isUnderwearUnlocked &&
                   ctx.system?.isFull)
-                  ? 'show !flex'
-                  : ''
+                  ? "show !flex"
+                  : ""
               }`}
               onClick={(e) => {
                 e.stopPropagation();
-                openCreateVideo('undress');
+                openCreateVideo("undress");
               }}
             >
-              {item.type !== 'IMG' && (
+              {item.type !== "IMG" && (
                 <Image
                   className="lock ml-2"
                   width={20}
@@ -519,16 +519,16 @@ export const ImageVideoRecorder: Record<{
 
               <div
                 className={`btn ml-3 flex justify-center items-center pl-1 pr-3 min-w-28 h-10 rounded-[52px] text-lg tracking-[-0.5px] text-white ${
-                  item.type === 'IMG' ? 'undress' : ''
+                  item.type === "IMG" ? "undress" : ""
                 }`}
                 style={{
                   background:
-                    item.type === 'IMG'
-                      ? 'linear-gradient(to right, #ff8f4f 0%, #ec52d4 100%)'
-                      : 'linear-gradient(to right, #7e78e4 0%, #9e6ed1 100%)',
+                    item.type === "IMG"
+                      ? "linear-gradient(to right, #ff8f4f 0%, #ec52d4 100%)"
+                      : "linear-gradient(to right, #7e78e4 0%, #9e6ed1 100%)",
                 }}
               >
-                {item.type !== 'IMG' ? (
+                {item.type !== "IMG" ? (
                   <Image
                     className="love-lock mr-[2px]"
                     width={24}
@@ -545,9 +545,9 @@ export const ImageVideoRecorder: Record<{
                     src="/icons/permit-18.png"
                   />
                 )}
-                {item.type === 'IMG'
-                  ? ctx.t!('chat.undress')
-                  : ctx.t!('chat.unlock')}
+                {item.type === "IMG"
+                  ? ctx.t!("chat.undress")
+                  : ctx.t!("chat.unlock")}
               </div>
             </div>
           ) : (
@@ -564,7 +564,7 @@ export const AwaitRecord: FC = () => {
   return (
     <div className="item__container--text relative z-[1] text-black">
       <div
-        className={cn('text__inner flex items-center', ClassName.text__inner)}
+        className={cn("text__inner flex items-center", ClassName.text__inner)}
       >
         <Image
           className="loading-icon"
@@ -583,25 +583,25 @@ export const AwaitRecord: FC = () => {
 export const BubbleFooter: Record = ({ item }) => {
   const bubbleLeftProp = {
     className:
-      'bubble-footer bubble-footer--left absolute bottom-0 left-[-5px] group-[.self]:hidden',
+      "bubble-footer bubble-footer--left absolute bottom-0 left-[-5px] group-[.self]:hidden",
     width: 17,
     height: 22,
   };
   return (
     <>
-      {item.type === 'ASMR' ? (
+      {item.type === "ASMR" ? (
         <Image
           {...bubbleLeftProp}
           alt=""
           src="/icons/bubble-footer-left-asmr.png"
         />
-      ) : item.type === 'HOT_DATE' ? (
+      ) : item.type === "HOT_DATE" ? (
         <Image
           {...bubbleLeftProp}
           alt=""
           src="/icons/bubble-footer-left-hot-date.png"
         />
-      ) : item.type === 'ROLE_PLAY' ? (
+      ) : item.type === "ROLE_PLAY" ? (
         <Image
           {...bubbleLeftProp}
           alt=""

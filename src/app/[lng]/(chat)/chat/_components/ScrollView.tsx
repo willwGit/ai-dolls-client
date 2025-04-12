@@ -1,8 +1,8 @@
-'use client';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
-import { FC, LegacyRef, MutableRefObject, useContext, useEffect } from 'react';
-import { ChatContext } from './Client';
+"use client";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { FC, LegacyRef, MutableRefObject, useContext, useEffect } from "react";
+import { ChatContext } from "./Client";
 
 export const ScrollView: FC<{
   children: React.ReactNode;
@@ -16,9 +16,9 @@ export const ScrollView: FC<{
       ref={scrollDom}
       dir="ltr"
       className={cn(
-        'relative z-10 p-5 pb-0 flex-1 overflow-y-auto',
-        state.bg ? 'no-bg' : '',
-        state.isTransparent ? 'isTransparent' : ''
+        "relative z-10 p-5 pb-0 flex-1 overflow-y-auto",
+        state.bg ? "no-bg" : "",
+        state.isTransparent ? "isTransparent" : ""
       )}
       onScroll={onScroll}
     >
