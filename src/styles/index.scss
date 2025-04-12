@@ -1,4 +1,4 @@
-@import './tailwindcss.css';
+@import "./tailwindcss.css";
 
 .line-clamp-1 {
   word-break: break-all;
@@ -26,7 +26,7 @@
   }
 
   &[disabled]:not([type]),
-  &[disabled][type='default'] {
+  &[disabled][type="default"] {
     border: 0;
     color: #8b8992;
     background-color: #463991;
@@ -55,6 +55,11 @@
   color: #fff;
   background-color: #181425;
 
+  &.bg-white {
+    background-color: #fff;
+    color: #333;
+  }
+
   &.tab-page {
     box-sizing: border-box;
   }
@@ -67,7 +72,7 @@
   }
 }
 
-div[role='dialog'] {
+div[role="dialog"] {
   width: auto;
   padding: 0;
   background: transparent;
@@ -75,7 +80,7 @@ div[role='dialog'] {
   overflow: hidden;
   border-radius: 20px;
 
-  > button[type='button'] {
+  > button[type="button"] {
     display: none;
     opacity: 0;
   }

@@ -38,6 +38,7 @@ import { Action } from "./_components/Action";
 import { dir } from "i18next";
 import { VideoDialog } from "./_components/Video";
 import Cookies from "js-cookie";
+import { FC } from "react";
 
 const defaultState = {
   friendId: "",
@@ -1096,7 +1097,7 @@ export default function Chat({ params: { lng } }: CustomReactParams) {
   }, [list]);
 
   return (
-    <div className="full-page flex flex-col h-[100vh]">
+    <div className="full-page flex flex-col h-[100vh] bg-slate-50">
       <ChatContext.Provider
         value={{
           t,
@@ -1199,7 +1200,7 @@ export default function Chat({ params: { lng } }: CustomReactParams) {
                         "HOT_DATE",
                         "ROLE_PLAY",
                       ].includes(item.type) && (
-                        <div className="item__container--text relative z-[1] text-black">
+                        <div className="item__container--text relative z-[1] text-slate-800">
                           {item.gptModeration &&
                           userState.premiumStatus === "NONE" ? (
                             <TextRecord.TextNoPremium

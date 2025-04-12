@@ -1,17 +1,17 @@
-'use client';
+"use client";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
-import { filterImage } from '@/utils/business';
-import { Dispatch, FC, SetStateAction, useContext, useState } from 'react';
-import { ChatContext } from './Client';
-import { fetchRequest } from '@/utils/request';
-import { cn } from '@/lib/utils';
-import { CenterPopup } from '@/components/CenterPopup';
-import Image from 'next/image';
+} from "@/components/ui/drawer";
+import { filterImage } from "@/utils/business";
+import { Dispatch, FC, SetStateAction, useContext, useState } from "react";
+import { ChatContext } from "./Client";
+import { fetchRequest } from "@/utils/request";
+import { cn } from "@/lib/utils";
+import { CenterPopup } from "@/components/CenterPopup";
+import Image from "next/image";
 
 const state: Indexes = {
   actionMap: {},
@@ -23,15 +23,15 @@ export const Action: FC<{
 }> = ({ checkEntering, actions, onUnlock }) => {
   const ctx = useContext(ChatContext);
   const [actionMap, setActionMap] = useState<Indexes>({});
-  const [inp1, setInp1] = useState('');
-  const [inp2, setInp2] = useState('');
+  const [inp1, setInp1] = useState("");
+  const [inp2, setInp2] = useState("");
   const [actionDialogVisible, setActionDialogVisible] = useState(false);
   const openActionPopup = (item: any) => {
     ctx.setActionsVisible?.(false);
     state.actionMap = item;
     setActionMap(item);
-    setInp1('');
-    setInp2('');
+    setInp1("");
+    setInp2("");
     if (item.type === -1) {
       setAction();
       return;
@@ -47,17 +47,17 @@ export const Action: FC<{
     setActionDialogVisible(false);
 
     const { action, copywritingOne, copywritingTwo } = state.actionMap!;
-    fetchRequest('/restApi/friendAction/girlfriendActionProcessing', {
-      copywritingOne: inp1 || copywritingOne || '',
-      copywritingTwo: inp2 || copywritingTwo || '',
+    fetchRequest("/restApi/friendAction/girlfriendActionProcessing", {
+      copywritingOne: inp1 || copywritingOne || "",
+      copywritingTwo: inp2 || copywritingTwo || "",
       action,
       giftFriendId: ctx.state!.friendId,
     })
       .then((res) => {
         if (res.code === 1001) {
-          onUnlock('VIP_action');
+          onUnlock("VIP_action");
         } else if (res.code === 1002) {
-          ctx.setUnlockType?.('closer-msg');
+          ctx.setUnlockType?.("closer-msg");
           setTimeout(() => {
             ctx.setUnlockDialogVisible?.(true);
           }, 0);
@@ -70,10 +70,10 @@ export const Action: FC<{
   return (
     <>
       <Drawer open={ctx.actionsVisible} onOpenChange={ctx.setActionsVisible}>
-        <DrawerContent className="!bg-[#181624]">
+        <DrawerContent className="!bg-white">
           <DrawerHeader>
-            <DrawerTitle className="text-white text-left">
-              {ctx.t!('chat.actions')}
+            <DrawerTitle className="text-slate-800 text-left">
+              {ctx.t!("chat.actions")}
             </DrawerTitle>
           </DrawerHeader>
 
@@ -93,7 +93,7 @@ export const Action: FC<{
                   height={44}
                   src={filterImage(item.expression)}
                 />
-                <div className="action-label absolute top-12 left-2/4 -translate-x-2/4 text-sm text-white text-center w-full">
+                <div className="action-label absolute top-12 left-2/4 -translate-x-2/4 text-sm text-slate-700 text-center w-full">
                   {item.action}
                 </div>
               </div>
@@ -106,8 +106,8 @@ export const Action: FC<{
       <CenterPopup
         title={actionMap.mainTitle}
         subtitle={actionMap.subTitle}
-        confirmText={ctx.t!('component.accept')}
-        cancleText={ctx.t!('component.cancel')}
+        confirmText={ctx.t!("component.accept")}
+        cancleText={ctx.t!("component.cancel")}
         plainBtn
         isAction
         open={actionDialogVisible}
@@ -116,8 +116,8 @@ export const Action: FC<{
       >
         <div
           className={cn(
-            'action__slot group',
-            actionMap.type === 1 ? 'is-two' : ''
+            "action__slot group",
+            actionMap.type === 1 ? "is-two" : ""
           )}
         >
           {actionMap.type === 1 && (

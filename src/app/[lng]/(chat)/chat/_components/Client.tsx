@@ -202,17 +202,17 @@ export const ClientHead: FC<{
   return (
     <div
       className={cn(
-        "box-border flex items-center justify-between fixed top-0 left-0 w-full bg-[#181425] py-2 px-4 z-20",
-        ctx.detail?.styleType === "USER" ? "bg-[#11142f]" : ""
+        "box-border flex items-center justify-between fixed top-0 left-0 w-full bg-white shadow-sm py-2 px-4 z-20",
+        ctx.detail?.styleType === "USER" ? "bg-white" : ""
       )}
     >
       <div className="header__left flex items-center">
         <FaChevronLeft
           onClick={handleBack}
-          className="svg-icon size-6 swap-off text-white font-bold rtl:rotate-180 mr-2"
+          className="svg-icon size-6 swap-off text-slate-700 font-bold rtl:rotate-180 mr-2"
         />
         <div
-          className="box-border w-9 h-9 border border-[#625e6f] rounded-full bg-center"
+          className="box-border w-9 h-9 border border-slate-200 rounded-full bg-center"
           style={{
             backgroundSize: "37px auto",
             backgroundPosition: "center 0",
@@ -220,14 +220,14 @@ export const ClientHead: FC<{
           }}
           onClick={openHomePage}
         ></div>
-        <div className="mx-2 mb-0 max-w-28 text-xl font-bold text-white line-clamp-1">
+        <div className="mx-2 mb-0 max-w-28 text-xl font-bold text-slate-800 line-clamp-1">
           {ctx.detail?.name || ""}
         </div>
       </div>
       <div className="flex items-center">
         {Boolean(ctx.detail?.scene) ? (
           <div
-            className="flex justify-center items-center px-2 h-8 rounded-md bg-[#ff4c4e] font-bold text-sm text-white"
+            className="flex justify-center items-center px-2 h-8 rounded-md bg-blue-500 font-bold text-sm text-white"
             onClick={exitScene}
           >
             <Image
@@ -260,7 +260,7 @@ export const ClientBg: FC = () => {
       <div
         className="bg__mask overflow-hidden flex-1 relative w-full"
         style={{
-          background: "rgba(24, 20, 37, 0.5)",
+          background: "rgba(255, 255, 255, 0.5)",
         }}
       >
         {((ctx.detail?.styleType && ctx.detail?.styleType !== "USER") ||
@@ -283,21 +283,21 @@ export const ClientBg: FC = () => {
         <div
           className="mask__cover absolute top-0 left-0 size-full"
           style={{
-            background: "rgba(24, 20, 37, 0.5)",
+            background: "rgba(255, 255, 255, 0.7)",
           }}
         ></div>
         <div
           className="mask__top absolute top-0 left-0 w-full h-28"
           style={{
             backgroundImage:
-              "linear-gradient(to bottom, #181425 0%, rgba(24, 20, 37, 0) 100%)",
+              "linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0) 100%)",
           }}
         ></div>
         <div
           className="mask__bottom absolute bottom-[-1px] w-full left-0 h-40"
           style={{
             backgroundImage:
-              "linear-gradient(to bottom, rgba(24, 20, 37, 0) 0%, #181425 100%)",
+              "linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #ffffff 100%)",
           }}
         ></div>
       </div>
@@ -551,7 +551,7 @@ export const ClientSendMsg: FC<{
           {ctx.sceneBtns?.map((item, index) => (
             <div
               key={index}
-              className="btn flex h-full items-center px-2 py-3 w-full border border-[#8c8c8c] rounded-xl text-sm text-white bg-[#454052] bg-opacity-80"
+              className="btn flex h-full items-center px-2 py-3 w-full border border-slate-300 rounded-xl text-sm text-slate-800 bg-white bg-opacity-90"
               onClick={() => {
                 ctx.sendPreinstall?.(item);
               }}
@@ -566,12 +566,12 @@ export const ClientSendMsg: FC<{
       <div
         className={cn(
           "input-container relative p-4 pb-3 leading-none",
-          ctx.bg ? "no-bg bg-transparent" : "bg-[#181425]"
+          ctx.bg ? "no-bg bg-transparent" : "bg-white"
         )}
       >
         <textarea
           value={ctx.message}
-          className="textarea-dom py-2 pr-[72px] pl-4 w-full h-10 rounded-3xl bg-[#302c4f] resize-none !outline-none leading-normal rtl:pr-4 rtl:pl-[72px]"
+          className="textarea-dom py-2 pr-[72px] pl-4 w-full h-10 rounded-3xl bg-slate-100 resize-none !outline-none leading-normal rtl:pr-4 rtl:pl-[72px] text-black"
           placeholder={`${
             ctx.isPress || !!ctx.readyVoice ? "" : ctx.t!("chat.typeAMessage")
           }...`}
@@ -603,8 +603,8 @@ export const ClientSendMsg: FC<{
         {ctx.isPress && (
           <div
             className={cn(
-              "delete-box flex justify-center items-center absolute top-2/4 left-1 -translate-y-2/4 w-[30px] h-[30px] rounded-full bg-[#493f98]",
-              deleteVoiceActive ? "active bg-[#8f7ecc]" : "",
+              "delete-box flex justify-center items-center absolute top-2/4 left-1 -translate-y-2/4 w-[30px] h-[30px] rounded-full bg-blue-500",
+              deleteVoiceActive ? "active bg-blue-600" : "",
               "rtl:left-[unset] rtl:right-1"
             )}
             onClick={() => {
@@ -635,7 +635,7 @@ export const ClientSendMsg: FC<{
               src="/icons/voice-progress.png"
               alt="voice"
             />
-            <span className="text-lg left-32 text-white tracking-[-0.5px] block ml-2 rtl:ml-0 rtl:mr-2">
+            <span className="text-lg left-32 text-slate-700 tracking-[-0.5px] block ml-2 rtl:ml-0 rtl:mr-2">
               0:{`${ctx.recordLength}`.padStart(2, "0")}
             </span>
           </div>
@@ -683,7 +683,7 @@ export const ClientSendMsg: FC<{
         <div
           className={cn(
             "tools-bar flex items-center flex-nowrap pl-6 pb-4 overflow-x-auto",
-            ctx.bg ? "no-bg bg-transparent" : "bg-[#181425]"
+            ctx.bg ? "no-bg bg-transparent" : "bg-white"
           )}
           style={{
             unicodeBidi: "normal",

@@ -258,16 +258,16 @@ const Page: FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto pb-20 mt-0">
+    <div className="space-y-6 max-w-2xl mx-auto pb-20 mt-4">
       {authError && (
         <div className="text-center py-12">
-          <div className="bg-white/5 rounded-xl p-8">
-            <h2 className="text-xl text-white mb-4">
+          <div className="bg-white rounded-xl p-8 shadow-md">
+            <h2 className="text-xl text-slate-800 mb-4">
               {t("Login to View Posts")}
             </h2>
             <button
               onClick={() => router.push(`/${params.lng}/login`)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full transition-colors"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full transition-colors"
             >
               {t("Login / Sign Up")}
             </button>
@@ -276,7 +276,7 @@ const Page: FC = () => {
       )}
 
       {!authError && posts.length === 0 && hasFetched && (
-        <div className="text-center text-white/60 py-12">
+        <div className="text-center text-slate-500 py-12">
           {t("No posts available")}
         </div>
       )}
@@ -284,7 +284,7 @@ const Page: FC = () => {
       {posts.map((post) => (
         <article
           key={post.id}
-          className="bg-white/5 rounded-xl overflow-hidden"
+          className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200"
         >
           <div
             className="p-4 flex items-center space-x-3 cursor-pointer"
@@ -297,13 +297,13 @@ const Page: FC = () => {
               alt={post.customProfileName}
               width={40}
               height={40}
-              className="w-10 h-10 rounded-full object-cover"
+              className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100"
             />
             <div className="flex-1">
-              <h3 className="text-white font-medium">
+              <h3 className="text-slate-800 font-medium">
                 {post.customProfileName}
               </h3>
-              <p className="text-white/60 text-sm">
+              <p className="text-slate-500 text-sm">
                 {formatTimestamp(post.createTime)}
               </p>
             </div>
@@ -313,8 +313,8 @@ const Page: FC = () => {
                 className={cn(
                   "px-4 py-1.5 text-white text-sm rounded-full flex items-center gap-2 transition-colors",
                   userInfo?.premium?.hasPremium
-                    ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
-                    : "bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                    ? "bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600"
+                    : "bg-gradient-to-r from-violet-400 to-purple-500 hover:from-violet-500 hover:to-purple-600"
                 )}
               >
                 <svg
@@ -340,7 +340,7 @@ const Page: FC = () => {
             )}
           </div>
 
-          <p className="px-4 text-white/90 mb-8 text-lg">{post.content}</p>
+          <p className="px-4 text-slate-700 mb-6 text-lg">{post.content}</p>
 
           {(() => {
             const validImageUrls = post.imageUrls.filter(
@@ -348,7 +348,7 @@ const Page: FC = () => {
             );
             if (validImageUrls.length === 0) return null;
             return (
-              <div className="relative mt-4 px-4 pb-4">
+              <div className="relative mt-2 px-4 pb-4">
                 <div
                   className={cn("grid gap-3", {
                     "grid-cols-1": validImageUrls.length === 1,
@@ -387,11 +387,11 @@ const Page: FC = () => {
                           className="absolute inset-0 flex items-center justify-center cursor-pointer"
                           onClick={() => handleUnlock(post)}
                         >
-                          <div className="bg-black/30 p-3 rounded-xl flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                          <div className="bg-white/40 backdrop-blur-sm p-3 rounded-xl flex items-center justify-center group-hover:bg-white/60 transition-colors">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               className={cn(
-                                "text-white",
+                                "text-slate-800",
                                 validImageUrls.length === 1
                                   ? "h-12 w-12"
                                   : "h-8 w-8"
@@ -420,7 +420,29 @@ const Page: FC = () => {
       ))}
 
       {loading && (
-        <div className="text-center text-white/60 py-4">Loading...</div>
+        <div className="text-center text-slate-500 py-4 flex items-center justify-center">
+          <svg
+            className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          Loading...
+        </div>
       )}
 
       {currentPost && (

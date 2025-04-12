@@ -20,7 +20,7 @@ type Record<T = any> = FC<
 
 const ClassName = {
   text__inner:
-    "text__inner px-3 py-2 max-w-72 min-w-14 min-h-9 rounded-2xl bg-[#e9e9eb] break-words whitespace-pre-wrap",
+    "text__inner px-3 py-2 max-w-72 min-w-14 min-h-9 rounded-2xl bg-slate-100 break-words whitespace-pre-wrap text-black",
 };
 
 // 时间, 通知
@@ -28,7 +28,7 @@ export const SystemRecord: Record = ({ item }) => {
   return (
     <div
       className={cn(
-        "item--info text-sm text-[#ebebf5] text-center mb-3 whitespace-pre-wrap",
+        "item--info text-sm text-slate-500 text-center mb-3 whitespace-pre-wrap",
         !!item.scene && item.type !== "TIMESTAMP" ? "scene" : ""
       )}
     >
@@ -57,7 +57,7 @@ export const TextRecord: TextRecord = {
     return (
       <div
         className={cn(
-          "text__inner group-[.self]:bg-[#3f3b52] group-[.self]:text-white",
+          "text__inner group-[.self]:bg-blue-500 group-[.self]:text-white",
           ClassName.text__inner,
           item.type === "HOT_DATE" ? "hot-date text-white" : "",
           item.type === "ROLE_PLAY" ? "role-play text-white" : ""
@@ -84,7 +84,7 @@ export const TextRecord: TextRecord = {
         <div
           className={cn(
             ClassName.text__inner,
-            "text__inner relative max-w-64",
+            "text__inner relative max-w-64 text-black",
             item.type === "HOT_DATE" ? "hot-date" : "",
             item.type === "ROLE_PLAY" ? "role-play" : ""
           )}
@@ -94,7 +94,7 @@ export const TextRecord: TextRecord = {
         {typeof item.feedback !== "undefined" && !item.feedback && (
           <div className="edit-praise flex items-center ml-3">
             <Image
-              className="rounded-full flex justify-center items-center w-8 h-8 bg-[#474459]"
+              className="rounded-full flex justify-center items-center w-8 h-8 bg-slate-200"
               width={28}
               height={28}
               src="/icons/praise.png"
@@ -106,7 +106,7 @@ export const TextRecord: TextRecord = {
             <Image
               width={28}
               height={28}
-              className="rounded-full flex justify-center items-center w-8 h-8 bg-[#474459] ml-3"
+              className="rounded-full flex justify-center items-center w-8 h-8 bg-slate-200 ml-3"
               src="/icons/no-praise.png"
               alt="no-praise"
               onClick={() => {
@@ -116,7 +116,7 @@ export const TextRecord: TextRecord = {
           </div>
         )}
         {["LIKE", "DISLIKE"].includes(item.feedback) && (
-          <div className="fixed-btn absolute -right-3 bottom-0 bg-white flex justify-center items-center w-8 h-8 rounded-full">
+          <div className="fixed-btn absolute -right-3 bottom-0 bg-white shadow-sm flex justify-center items-center w-8 h-8 rounded-full">
             {item.feedback === "LIKE" && (
               <Image
                 width={28}
@@ -147,7 +147,7 @@ export const TextRecord: TextRecord = {
   TextNoPremium: ({ item, onUnlock, t }) => {
     return (
       <div className="text__unlock flex items-center">
-        <span className="px-3 py-[6px] w-40 rounded-xl bg-[#e9e9eb] text-xs leading-[22px] break-words">
+        <span className="px-3 py-[6px] w-40 rounded-xl bg-slate-100 text-xs leading-[22px] break-words text-black">
           ************************************
         </span>
         <div
@@ -168,7 +168,7 @@ export const TextRecord: TextRecord = {
           <div
             className="btn flex items-center ml-3 justify-center w-28 h-10 rounded-full text-lg text-white"
             style={{
-              background: "linear-gradient(to right, #7e78e4 0%, #9e6ed1 100%)",
+              background: "linear-gradient(to right, #4f83ff 0%, #6a8dff 100%)",
             }}
             onClick={() => [
               onUnlock(
@@ -329,9 +329,9 @@ export const AudioRecord: Record<{
 
   return (
     <div
-      className="item__container--voice flex items-center w-[170px] h-14 border border-[#8c8c8c] rounded-2xl"
+      className="item__container--voice flex items-center w-[170px] h-14 border border-slate-300 rounded-2xl"
       style={{
-        background: "rgba(98, 94, 111, 0.6)",
+        background: "rgba(255, 255, 255, 0.9)",
       }}
       onClick={() => {
         playVoice();
@@ -369,14 +369,16 @@ export const AudioRecord: Record<{
             style={{
               background:
                 Number(item.voiveProgress) > index
-                  ? "linear-gradient(to right, #7e78e4 0%, #9e6ed1 100%)"
-                  : "white",
+                  ? "linear-gradient(to right, #4f83ff 0%, #6a8dff 100%)"
+                  : "#d1d5db",
             }}
             key={index}
           ></div>
         ))}
       </div>
-      <div className="time">{filterDuration(item.voiceDuration)}</div>
+      <div className="time text-slate-600">
+        {filterDuration(item.voiceDuration)}
+      </div>
     </div>
   );
 };
@@ -443,7 +445,12 @@ export const ImageVideoRecorder: Record<{
   };
 
   return (
-    <div className="item__container--video">
+    <div
+      className={cn(
+        "item__container--img max-w-64 min-w-[180px] min-h-[180px] overflow-hidden rounded-lg",
+        item.isPremiumResource ? "is-vip" : ""
+      )}
+    >
       <div className="video-wrapper">
         {item.type === "IMG" ? (
           <Image
@@ -486,73 +493,76 @@ export const ImageVideoRecorder: Record<{
             ></Image>
           )}
 
-          {(ctx.userState?.premiumStatus === "NONE" && item.type === "VIDEO") ||
-          (item.type === "IMG" &&
-            item.resourceType === "IMAGE_NORAL" &&
-            !item.isUnderwearUnlocked &&
-            ctx.system?.isFull) ? (
-            <div
-              className={`fixed-right hidden absolute top-2/4 right-0 translate-x-full -translate-y-2/4 items-center ${
-                (ctx.userState?.premiumStatus === "NONE" &&
-                  item.type === "VIDEO") ||
-                (item.type === "IMG" &&
-                  item.resourceType === "IMAGE_NORAL" &&
-                  !item.isUnderwearUnlocked &&
-                  ctx.system?.isFull)
-                  ? "show !flex"
-                  : ""
-              }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                openCreateVideo("undress");
-              }}
-            >
-              {item.type !== "IMG" && (
-                <Image
-                  className="lock ml-2"
-                  width={20}
-                  height={20}
-                  src="/icons/lock.png"
-                  alt=""
-                />
-              )}
+          <div
+            className={cn(
+              "premium-lock absolute top-0 left-0 z-10 size-full flex justify-center items-center",
+              item.isPremiumResource &&
+                ctx.userState?.premiumStatus !== "PREMIUM"
+                ? ""
+                : "hidden"
+            )}
+            onClick={() => {
+              onUnlock(
+                item.type === "IMG"
+                  ? "unlock_Undress_chat"
+                  : "unlock_video_chat"
+              );
+            }}
+          >
+            <div className="lock__inner flex flex-col items-center">
+              {item.isUnderwearUnlocked !== undefined ? (
+                <>
+                  {item.isUnderwearUnlocked ? (
+                    <></>
+                  ) : (
+                    <>
+                      <Image
+                        width={32}
+                        height={32}
+                        src="/icons/lock-white.png"
+                        alt=""
+                      />
 
-              <div
-                className={`btn ml-3 flex justify-center items-center pl-1 pr-3 min-w-28 h-10 rounded-[52px] text-lg tracking-[-0.5px] text-white ${
-                  item.type === "IMG" ? "undress" : ""
-                }`}
-                style={{
-                  background:
-                    item.type === "IMG"
-                      ? "linear-gradient(to right, #ff8f4f 0%, #ec52d4 100%)"
-                      : "linear-gradient(to right, #7e78e4 0%, #9e6ed1 100%)",
-                }}
-              >
-                {item.type !== "IMG" ? (
-                  <Image
-                    className="love-lock mr-[2px]"
-                    width={24}
-                    height={24}
-                    alt="love lock"
-                    src="/icons/love-lock.png"
-                  />
-                ) : (
-                  <Image
-                    className="love-lock mr-[2px]"
-                    width={24}
-                    height={24}
-                    alt=""
-                    src="/icons/permit-18.png"
-                  />
-                )}
-                {item.type === "IMG"
-                  ? ctx.t!("chat.undress")
-                  : ctx.t!("chat.unlock")}
-              </div>
+                      <div
+                        className={`btn ml-3 flex justify-center items-center pl-1 pr-3 min-w-28 h-10 rounded-[52px] text-lg tracking-[-0.5px] text-white ${
+                          item.type === "IMG" ? "undress" : ""
+                        }`}
+                        style={{
+                          background:
+                            item.type === "IMG"
+                              ? "linear-gradient(to right, #ff8f4f 0%, #ec52d4 100%)"
+                              : "linear-gradient(to right, #4f83ff 0%, #6a8dff 100%)",
+                        }}
+                      >
+                        {item.type !== "IMG" ? (
+                          <Image
+                            className="love-lock mr-[2px]"
+                            width={24}
+                            height={24}
+                            alt="love lock"
+                            src="/icons/love-lock.png"
+                          />
+                        ) : (
+                          <Image
+                            className="love-lock mr-[2px]"
+                            width={24}
+                            height={24}
+                            alt=""
+                            src="/icons/permit-18.png"
+                          />
+                        )}
+                        {item.type === "IMG"
+                          ? ctx.t!("chat.undress")
+                          : ctx.t!("chat.unlock")}
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <></>
+              )}
             </div>
-          ) : (
-            <></>
-          )}
+          </div>
         </div>
       </div>
     </div>
@@ -564,7 +574,10 @@ export const AwaitRecord: FC = () => {
   return (
     <div className="item__container--text relative z-[1] text-black">
       <div
-        className={cn("text__inner flex items-center", ClassName.text__inner)}
+        className={cn(
+          "text__inner flex items-center text-black",
+          ClassName.text__inner
+        )}
       >
         <Image
           className="loading-icon"
