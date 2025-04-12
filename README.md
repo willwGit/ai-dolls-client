@@ -1,15 +1,106 @@
-# Next Ai Friend
+# Next AI Doll
 
-## 前提条件
+An open source AI companion application built with Next.js. This project creates a modern, responsive AI chat interface with multilingual support.
 
-- 管理员运行 `PowerShell`
-- - 执行 **Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))**
-- 配置环境变量
-- - 在“系统变量”区域中，滚动查找`Path`变量并选择它，然后点击“编辑”。将 `C:\ProgramData\chocolatey\bin` 添加到环境变量中
-- 执行 `choco install mkcert` 为系统安装 `mkcert`
-- `mkcert localhost 127.0.0.1 ::1` 为 `localhost` 生成证书（得到`localhost+2-key`和`localhost+2`）`pem` 文件
-- `mkcert -install`
-- `start .` 打开当前文件夹，搜索 `localhost` 将 `localhost+2 localhost+2-key` 文件放在 `public`
-- 运行 `yarn dev` 启动
+## 🌟 Features
 
-## 启动命令：yarn dev
+- Modern React-based UI with Tailwind CSS
+- AI chat functionality
+- Internationalization support
+- Authentication integration
+- Mobile-friendly responsive design
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (LTS version recommended)
+- Yarn package manager
+- SSL certificates for local development
+
+### Setting up SSL for Local Development
+
+1. Install `mkcert` for creating local trusted certificates:
+
+   **On Windows**:
+
+   ```
+   # Install using Chocolatey
+   choco install mkcert
+   ```
+
+   **On macOS**:
+
+   ```
+   # Install using Homebrew
+   brew install mkcert
+   ```
+
+   **On Linux**:
+
+   ```
+   # Install mkcert appropriate for your distribution
+   # Example for Ubuntu/Debian:
+   apt install libnss3-tools
+   # Then install the binary manually or via package manager
+   ```
+
+2. Generate certificates for localhost:
+
+   ```
+   mkcert localhost 127.0.0.1 ::1
+   mkcert -install
+   ```
+
+3. Place the generated certificate files (`localhost+2.pem` and `localhost+2-key.pem`) in the `public` directory
+
+### Installation
+
+1. Clone the repository:
+
+   ```
+   git clone https://github.com/willwGit/ai-dolls-client.git
+   cd ai-dolls-client
+   ```
+
+2. Install dependencies:
+
+   ```
+   yarn install
+   ```
+
+3. Start the development server:
+   ```
+   yarn dev
+   ```
+
+The application will be available at https://127.0.0.1:3000
+
+## 🧩 Project Structure
+
+- `/app` - Next.js application pages and routes
+- `/components` - Reusable UI components
+- `/context` - React context providers
+- `/hooks` - Custom React hooks
+- `/lib` - Shared utilities and helpers
+- `/locales` - Internationalization resources
+- `/public` - Static assets and SSL certificates
+- `/styles` - Global CSS and styling
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the Unlicense License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Contact
+
+Project Link: [https://github.com/willwGit/ai-dolls-client](https://github.com/willwGit/ai-dolls-client)
