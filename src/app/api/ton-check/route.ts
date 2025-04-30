@@ -79,9 +79,9 @@ async function check(req: NextRequest) {
     `https://tonapi.io/v2/address/${encodeURI(body.address)}/parse`
   );
 
-  // const token = cookies().get("token")?.value;
-  const token =
-    "eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiJqbnU3OTEiLCJzdWIiOiIxNjQwNTQzOTY0Njc3MzIwNzA2IiwiZXhwIjoxNjgyMzkwMzM1LCJpYXQiOjE2Nzk5NzExMzV9.C58hQ903EPbRN8Xo_Vdrml9lQiiahdR_YVYbWL9osoxRfr9QlZq89mpuy-GnoVkiEEntgLt7XC5-yxHUXlbzVQ";
+  const token = cookies().get("token")?.value;
+  // const token =
+  //   "eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiJqbnU3OTEiLCJzdWIiOiIxNjQwNTQzOTY0Njc3MzIwNzA2IiwiZXhwIjoxNjgyMzkwMzM1LCJpYXQiOjE2Nzk5NzExMzV9.C58hQ903EPbRN8Xo_Vdrml9lQiiahdR_YVYbWL9osoxRfr9QlZq89mpuy-GnoVkiEEntgLt7XC5-yxHUXlbzVQ";
 
   const { data: ApiData } = await axios(
     AppConfigEnv.HOST + "/restApi/member/bindTonAddress",

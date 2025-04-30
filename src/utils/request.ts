@@ -19,8 +19,15 @@ export const fetchRequest = async <T = any>(
   options: RequestInit = {}
 ) => {
   try {
-    const token =
+    // Check if token exists, if not, set it
+    const defaultToken =
       "eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiJqbnU3OTEiLCJzdWIiOiIxNjQwNTQzOTY0Njc3MzIwNzA2IiwiZXhwIjoxNjgyMzkwMzM1LCJpYXQiOjE2Nzk5NzExMzV9.C58hQ903EPbRN8Xo_Vdrml9lQiiahdR_YVYbWL9osoxRfr9QlZq89mpuy-GnoVkiEEntgLt7XC5-yxHUXlbzVQ";
+
+    if (!Cookie.get("token")) {
+      Cookie.set("token", defaultToken, { expires: 365 });
+    }
+
+    const token = Cookie.get("token") || defaultToken;
 
     const headers: any = {
       "Content-Type": "application/json", // 指定发送的数据类型为 JSON

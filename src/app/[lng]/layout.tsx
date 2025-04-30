@@ -7,6 +7,7 @@ import Script from "next/script";
 import { Navbar } from "@/components/Navbar";
 import { Loading } from "@/components/Loading";
 import { Condition } from "@/components/Condition";
+import { TokenSetter } from "@/components/TokenSetter";
 import { Viewport } from "next";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -52,6 +53,8 @@ export default function RootLayout({
       />
 
       <body className="bg-[#181425]">
+        <TokenSetter />
+
         <main className="w-full h-[100vh] m-0">
           <Navbar></Navbar>
 

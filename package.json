@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env PORT=3000 NEXT_ORIGIN=https://127.0.0.1:3000 next dev --experimental-https --experimental-https-key ./public/127.0.0.1+3-key.pem --experimental-https-cert ./public/127.0.0.1+3.pem",
+    "dev": "cross-env PORT=3000 NEXT_ORIGIN=https://127.0.0.1:3000 next dev --experimental-https",
     "build": "rimraf .next && next build",
     "start": "next start",
     "lint": "next lint",
